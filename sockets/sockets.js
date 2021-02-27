@@ -1,5 +1,5 @@
 const GameModel = require('../models/game.model')
-const { randomInt, leaveLobby } = require('../utils/utils')
+const { playerPositionGenerator, barrierPositionGenerator, leaveLobby } = require('../utils/utils')
 
 const allClients = []
 
@@ -22,7 +22,7 @@ module.exports = io => {
                 GameModel
                     .findOne({_id: lobbyId})
                     .lean()
-                    .exec((err, { playersCount }) => {
+                    .exec((err, { playersCount, gameBarrierCount }) => {
                         if (!err && playersCount < 2) {
                             GameModel
                                 .findOneAndUpdate(
@@ -36,27 +36,27 @@ module.exports = io => {
                                     socket.emit('joinLobby', lobby)
                                     io.sockets.emit('updateLobby', lobby)
 
-                                    const { _id, fieldSize } = lobby
-                                    socketLink.lobbyId = _id
+                                    const { fieldSize } = lobby
+                                    socketLink.lobbyId = lobbyId
 
                                     const lobbyClients = allClients.filter(client => client.lobbyId == lobbyId)
 
                                     if (lobbyClients.length === 2) {
-                                        let random = Math.round(Math.random())
-                                        let first = !!random
-
-                                        let position1 = randomInt(0, fieldSize)
-                                        let position2 = randomInt(0, fieldSize)
+                                        const { move1, move2, position1, position2 } = playerPositionGenerator(fieldSize)
+                                        const { barriers } = barrierPositionGenerator(fieldSize, gameBarrierCount)
 
                                         lobbyClients[0].socket.emit('startGame', {
-                                            first: first,
+                                            move: move1,
                                             startPosition: position1,
                                             opponentStartPosition: position2,
+                                            barriers
                                         })
+
                                         lobbyClients[1].socket.emit('startGame', {
-                                            first: !first,
+                                            move: move2,
                                             startPosition: position2,
                                             opponentStartPosition: position1,
+                                            barriers
                                         })
 
                                         lobbyClients.forEach((client) => {

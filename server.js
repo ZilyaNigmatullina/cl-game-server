@@ -42,15 +42,18 @@ app.post('/api/lobby', function (req, res) {
         lobbyName,
     } = req.body
     object.playersCount = 0
-
-    GameModel.create(object)
-        .then(createdObject => {
-            sendData(res, createdObject, true)
-            io.sockets.emit('createLobby', createdObject)
-        })
-        .catch(err => {
-            sendData(res, err, false)
-        })
+    if (fieldSize && gameBarrierCount && playerBarrierCount && lobbyName) {
+        GameModel.create(object)
+            .then(createdObject => {
+                sendData(res, createdObject, true)
+                io.sockets.emit('createLobby', createdObject)
+            })
+            .catch(err => {
+                sendData(res, err, false)
+            })
+    } else {
+        sendData(res.status(400), "Все поля обязательные", false)
+    }
 })
 
 app.post('/api/deletelobby', function (req, res) {
