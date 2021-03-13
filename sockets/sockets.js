@@ -5,8 +5,11 @@ const allClients = []
 
 module.exports = io => {
     io.on('connection', function (socket) {
-        socket.emit('connected', 'successful connection');
-        let socketLink = { socket, lobbyId: null }
+        socket.emit('connection', {
+            message: 'LOGIN OK'
+        });
+
+        let socketLink = { socket, lobbyId: null, clientName: socket.handshake.query.name }
         allClients.push(socketLink);
 
         const bindLeaveLobby = leaveLobby.bind(null, io, socketLink, GameModel, socket)
@@ -36,27 +39,31 @@ module.exports = io => {
                                     socket.emit('joinLobby', lobby)
                                     io.sockets.emit('updateLobby', lobby)
 
-                                    const { fieldSize } = lobby
+                                    const { width, height } = lobby
                                     socketLink.lobbyId = lobbyId
 
                                     const lobbyClients = allClients.filter(client => client.lobbyId == lobbyId)
 
                                     if (lobbyClients.length === 2) {
-                                        const { move1, move2, position1, position2 } = playerPositionGenerator(fieldSize)
-                                        const { barriers } = barrierPositionGenerator(fieldSize, gameBarrierCount)
+                                        const { move1, move2, position1, position2 } = playerPositionGenerator(width, height)
+                                        const { barriers } = barrierPositionGenerator(width, height, gameBarrierCount)
+                                        const name0 = lobbyClients[0].socket.handshake.query.name || 'Anonymous'
+                                        const name1 = lobbyClients[1].socket.handshake.query.name || 'Anonymous'
 
                                         lobbyClients[0].socket.emit('startGame', {
                                             move: move1,
                                             startPosition: position1,
                                             opponentStartPosition: position2,
-                                            barriers
+                                            barriers,
+                                            opponentName: name1
                                         })
 
                                         lobbyClients[1].socket.emit('startGame', {
                                             move: move2,
                                             startPosition: position2,
                                             opponentStartPosition: position1,
-                                            barriers
+                                            barriers,
+                                            opponentName: name0
                                         })
 
                                         lobbyClients.forEach((client) => {
@@ -69,8 +76,6 @@ module.exports = io => {
                                 })
                         }
                     })
-
-
             }
         })
 

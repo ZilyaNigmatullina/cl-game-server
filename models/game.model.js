@@ -2,11 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const GameSchema = new Schema({
-    fieldSize: { type: Number },
+    width: { type: Number },
+    height: { type: Number },
     gameBarrierCount: { type: Number },
     playerBarrierCount: { type: Number },
     playersCount: { type: Number },
-    lobbyName: { type: String },
+    name: { type: String },
 }, {
     versionKey: false,
     collection: 'LobbyCollection'
