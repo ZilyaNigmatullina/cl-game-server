@@ -35,14 +35,9 @@ app.get('/api/lobby', function (req, res) {
 })
 
 app.post('/api/lobby', function (req, res) {
-    const object = {
-        fieldSize,
-        gameBarrierCount,
-        playerBarrierCount,
-        lobbyName,
-    } = req.body
+    const object = { width, height, gameBarrierCount, playerBarrierCount, name } = req.body
     object.playersCount = 0
-    if (fieldSize && gameBarrierCount && playerBarrierCount && lobbyName) {
+    if (width && height && gameBarrierCount && playerBarrierCount && name) {
         GameModel.create(object)
             .then(createdObject => {
                 sendData(res, createdObject, true)
