@@ -24,17 +24,13 @@ function barrierPositionGenerator(width, height, barrierCount) {
         const position = [randomInt(0, height), randomInt(0, width)]
         const dx = Math.round(Math.random()) === 1 ? 1 : -1
         const dy = Math.round(Math.random()) === 1 ? 1 : -1
-        const type = Math.round(Math.random())
 
-        barriers.push({
-            position: [
-                position,
-                [position[0] + dx, position[1]],
-                [position[0], position[1] + dy],
-                [position[0] + dx, position[1] + dy]
-            ],
-            type
-        })
+        barriers.push([
+            position,
+            [position[0] + dx, position[1]],
+            [position[0], position[1] + dy],
+            [position[0] + dx, position[1] + dy]
+        ])
     }
 
     return {
