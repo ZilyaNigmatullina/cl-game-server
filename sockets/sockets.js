@@ -14,7 +14,7 @@ module.exports = io => {
 
         const bindLeaveLobby = leaveLobby.bind(null, io, socketLink, GameModel, socket)
 
-        socket.on('joinLobby', ({lobbyId}) => {
+        socket.on('joinLobby', ({id: lobbyId}) => {
             if (lobbyId) {
                 const lobbyPath = `lobby-${lobbyId}`
                 if (socketLink.lobbyId == lobbyId) return
@@ -50,26 +50,40 @@ module.exports = io => {
                                         const name0 = lobbyClients[0].socket.handshake.query.name || 'Anonymous'
                                         const name1 = lobbyClients[1].socket.handshake.query.name || 'Anonymous'
 
+                                        const name = [name0, name1]
+                                        const winPos = [move1 ? (height - 1) : 0, move2 ? (height - 1) : 0]
+
                                         lobbyClients[0].socket.emit('startGame', {
                                             move: move1,
-                                            startPosition: position1,
-                                            opponentStartPosition: position2,
+                                            width: lobby.width,
+                                            height: lobby.height,
+                                            position: position1,
+                                            opponentPosition: position2,
                                             barriers,
-                                            opponentName: name1
+                                            opponentName: name[1]
                                         })
 
                                         lobbyClients[1].socket.emit('startGame', {
                                             move: move2,
-                                            startPosition: position2,
-                                            opponentStartPosition: position1,
+                                            width: lobby.width,
+                                            height: lobby.height,
+                                            position: position2,
+                                            opponentPosition: position1,
                                             barriers,
-                                            opponentName: name0
+                                            opponentName: name[0]
                                         })
 
-                                        lobbyClients.forEach((client) => {
+                                        lobbyClients.forEach((client, index) => {
                                             client.socket.on('step', data => {
                                                 client.socket.emit('step', data)
                                                 client.socket.to(lobbyPath).emit('step', data)
+
+                                                if (data.position[0] === winPos[index]) {
+                                                    lobbyClients.forEach((item, ind) => {
+                                                        item.socket.emit('endGame', { winnerName: name[index] })
+                                                        item.socket.removeAllListeners('step')
+                                                    })
+                                                }
                                             })
                                         })
                                     }

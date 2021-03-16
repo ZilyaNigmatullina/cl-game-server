@@ -34,6 +34,16 @@ app.get('/api/lobby', function (req, res) {
     })
 })
 
+app.get('/api/randomlobby', function (req, res) {
+    GameModel.aggregate([{ '$sample': { size: 1 } }]).exec((err, lobby) => {
+        if (!err) {
+            sendData(res, lobby && lobby[0] ? lobby[0] : null, true)
+        } else {
+            sendData(res, err, false)
+        }
+    })
+})
+
 app.post('/api/lobby', function (req, res) {
     const object = { width, height, gameBarrierCount, playerBarrierCount, name } = req.body
     object.playersCount = 0
