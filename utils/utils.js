@@ -2,6 +2,10 @@ function sendData(response, data, success) {
     response.send({data, success})
 }
 
+function getResponseObject(data, success) {
+    return { data, success }
+}
+
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min
 }
@@ -73,6 +77,7 @@ function leaveLobby(io, socketLink, GameModel, socket, lobbyId, allClients) {
 module.exports = {
     sendData,
     randomInt,
+    getResponseObject,
     playerPositionGenerator,
     leaveLobby,
     barrierPositionGenerator
