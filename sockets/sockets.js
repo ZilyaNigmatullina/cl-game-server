@@ -95,7 +95,7 @@ module.exports = io => {
 
                                     if (lobbyClients.length === 2) {
                                         const { move1, move2, position1, position2 } = playerPositionGenerator(width, height)
-                                        const { barriers } = barrierPositionGenerator(width, height, gameBarrierCount)
+                                        const { barriers } = barrierPositionGenerator(width, height, position1, position1, gameBarrierCount)
                                         const name0 = lobbyClients[0].socket.handshake.query.name || 'Anonymous'
                                         const name1 = lobbyClients[1].socket.handshake.query.name || 'Anonymous'
 
