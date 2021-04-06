@@ -1,5 +1,11 @@
+const Player = require('./player')
+
 function sendData(response, data, success) {
     response.send({data, success})
+}
+
+function getResponseObject(data, success) {
+    return { data, success }
 }
 
 function randomInt(min, max) {
@@ -18,19 +24,27 @@ function playerPositionGenerator(width, height) {
     }
 }
 
-function barrierPositionGenerator(width, height, barrierCount) {
+function barrierPositionGenerator(width, height, position, opponentPosition, barrierCount) {
+    const player = new Player('')
+    let tmpObstacles = []
+    player.initialization(height, width,
+        position[0], position[1], opponentPosition[0],
+        opponentPosition[1], -1, tmpObstacles)
     const barriers = []
     for (let i = 0; i < barrierCount; i++) {
-        const position = [randomInt(0, height), randomInt(0, width)]
-        const dx = Math.round(Math.random()) === 1 ? 1 : -1
-        const dy = Math.round(Math.random()) === 1 ? 1 : -1
-
-        barriers.push([
-            position,
-            [position[0] + dx, position[1]],
-            [position[0], position[1] + dy],
-            [position[0] + dx, position[1] + dy]
-        ])
+        const obstacles = player.expandObstacles()
+        if (obstacles.length > 0) {
+            const random = randomInt(0, obstacles.length)
+            const obst = obstacles[random]
+            barriers.push([
+                [obst[0].fromX, obst[0].fromY],
+                [obst[0].toX, obst[0].toY],
+                [obst[1].fromX, obst[1].fromY],
+                [obst[1].toX, obst[1].toY],
+            ])
+            tmpObstacles = [...tmpObstacles, ...obst]
+            player.obstacles = tmpObstacles
+        }
     }
 
     return {
@@ -73,6 +87,7 @@ function leaveLobby(io, socketLink, GameModel, socket, lobbyId, allClients) {
 module.exports = {
     sendData,
     randomInt,
+    getResponseObject,
     playerPositionGenerator,
     leaveLobby,
     barrierPositionGenerator
