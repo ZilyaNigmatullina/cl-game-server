@@ -27,7 +27,7 @@ class Player {
         this.obstacles = listOfObstacles
         this.myObstacles = 0
 
-        this.myGoalRow = this.myX === 0 ? sizeY - 1 : 0
+        this.myGoalRow = this.myX === 0 ? sizeX - 1 : 0
     }
 
     isInBoard(x, y) {
@@ -93,10 +93,10 @@ class Player {
             }
         }
 
-        let oppGoalRow = this.myGoalRow === 0 ? (this.sizeY - 1) : 0
+        let oppGoalRow = this.myGoalRow === 0 ? (this.sizeX - 1) : 0
         allObstacles.forEach(obstacle => {
-            let oppSteps = this.getEndPlayerSteps(obstacle, oppGoalRow, this.myX, this.myY)
-            let mySteps = this.getEndPlayerSteps(obstacle, this.myGoalRow, this.opponentX, this.opponentY)
+            let oppSteps = this.getEndPlayerSteps(obstacle, oppGoalRow, this.opponentX, this.opponentY)
+            let mySteps = this.getEndPlayerSteps(obstacle, this.myGoalRow, this.myX, this.myY)
             if (oppSteps.find(step => step[0] === oppGoalRow) && mySteps.find(step => step[0] === this.myGoalRow)) myObstacles.push(obstacle)
         })
 

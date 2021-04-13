@@ -109,6 +109,7 @@ module.exports = io => {
                                             position: position1,
                                             opponentPosition: position2,
                                             barriers,
+                                            playerBarrierCount: lobby.playerBarrierCount,
                                             opponentName: name[1]
                                         })
 
@@ -119,6 +120,7 @@ module.exports = io => {
                                             position: position2,
                                             opponentPosition: position1,
                                             barriers,
+                                            playerBarrierCount: lobby.playerBarrierCount,
                                             opponentName: name[0]
                                         })
 
